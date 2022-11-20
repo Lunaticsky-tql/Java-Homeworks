@@ -1,0 +1,42 @@
+package chess;
+
+import java.util.ArrayList;
+
+
+public class Model {
+
+	public static final int BLACK=1;
+	public static final int WHITE=-1;
+	public static final int WIDTH=15;
+	public static final int SPACE=0;
+	private ArrayList<ChessPoint> history =new ArrayList<ChessPoint>();
+	private int[][] data =new int [WIDTH][WIDTH];
+	public boolean putChess(int row,int col,int color)
+	{
+		if(row>0&&row<WIDTH&&col>0&&col<WIDTH&&(color==BLACK||color==WHITE)) {
+			if(data[row][col]==SPACE) {
+				data[row][col] = color;
+				history.add(new ChessPoint(row, col, color));
+				return true;
+			}
+		}
+		return false;
+	}
+	public int getChess(int row, int col) {
+		return data[row][col];
+	}
+	public int whoWin()
+	{
+		return SPACE;
+	}
+	public int getChessCount() {
+		return history.size();
+	}
+	public ChessPoint getChessPoint(int index) {
+		return history.get(index);
+	}
+	public void giveAIInformation() {
+		Vars.ai.listen(data,Vars.c.getOtherColor());
+	}
+	
+}

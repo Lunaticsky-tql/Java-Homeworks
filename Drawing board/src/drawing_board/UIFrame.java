@@ -1,0 +1,179 @@
+package drawing_board;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+
+
+public class UIFrame extends JFrame implements ActionListener{
+    public static final Color BG_BUTTON=new Color(238, 243, 247);
+	private static final long serialVersionUID = 1L;
+	public static final int DEFAULT_CURSOR=0;
+	public static final int CROSSHAIR_CURSOR=1;
+	public static final int MOVE_CURSOR=13;
+	public static final int TRIANGLE=0;
+	public static final int LINE=1;
+	public static final int OVAL=2;
+	public static final int SQUARE=3;
+	public static final int TEXT=4;
+	public static final int DRAW_LENGTH=5;
+	private final String[] drawOption={"triangle","line","oval","square","text"};
+	private final String[] drawOptionIconPath={"Icons/triangle.png","Icons/line.png","Icons/oval.png","Icons/square.png","Icons/text.png"};
+	private final String[] commandOption={"setting","regret","undo","clear","save"};
+	private final String[] commandOptionIconPath={"Icons/setting.png","Icons/regret.png","Icons/undo.png","Icons/clear.png","Icons/save.png"};
+    private JButton drawButton[]=new JButton[drawOption.length];
+    private JButton commandButton[]=new JButton[commandOption.length];
+	private final int[] drawOptionIconSize={20,20,20,20,20};
+	private final int[] commandOptionIconSize={20,20,20,20,20};
+	private DrawingBoard board;
+	
+	public UIFrame() {
+	        super();
+	        initUI();
+	        this.setTitle("2013599 Drawing Board");
+	        this.setLocationRelativeTo(null);
+	        this.setSize(640, 400);
+	        this.setResizable(false);
+	    }
+    public static void main(String args[]) {
+        UIFrame mainFrame=new UIFrame();
+        mainFrame.setVisible(true);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+	public void initUI() {
+		
+		JPanel drawPanel = new JPanel();
+		drawPanel.setLayout(new GridLayout(1,5,8,8));
+        drawPanel.setPreferredSize(new Dimension(200,40));
+		for (int i = 0; i < drawOption.length; i++) {
+			ImageIcon drawIcon=new ImageIcon(drawOptionIconPath[i]);
+			drawIcon.setImage(drawIcon.getImage().getScaledInstance(drawOptionIconSize[i], drawOptionIconSize[i], Image.SCALE_SMOOTH));
+			drawButton[i] = new JButton(drawOption[i]);
+			drawButton[i].setIcon(drawIcon);
+			drawButton[i].setFont(new Font("Arial", Font.PLAIN, 0));
+            drawButton[i].setVerticalTextPosition(JButton.CENTER);
+            drawButton[i].setHorizontalTextPosition(JButton.CENTER);
+			//not visible
+            Border broder=new EtchedBorder();
+	           drawButton[i].setBorder(broder);
+	           drawButton[i].setBackground(BG_BUTTON);
+	           drawButton[i].setFocusPainted(false);
+			drawButton[i].setPreferredSize(new Dimension(40, 40));
+			drawPanel.add(drawButton[i]);
+			drawButton[i].addActionListener(this);
+
+		}
+				
+		board= new DrawingBoard();
+		Dimension dimensionMenu=new Dimension(800,450);
+        board.setPreferredSize(dimensionMenu);
+        
+        
+		JPanel  commandPanel= new JPanel();
+		commandPanel.setLayout(new GridLayout(1,5,8,8));
+        Dimension dimensionSetting=new Dimension(400,40);
+        commandPanel.setPreferredSize(dimensionSetting);
+    	for (int i = 0; i < commandOption.length; i++) {
+			ImageIcon commandIcon=new ImageIcon(commandOptionIconPath[i]);
+			commandIcon.setImage(commandIcon.getImage().getScaledInstance(commandOptionIconSize[i], commandOptionIconSize[i], Image.SCALE_SMOOTH));
+			commandButton[i] = new JButton(commandOption[i], commandIcon);
+			commandButton[i].setIcon(commandIcon);
+			commandButton[i].setFont(new Font("Arial", Font.PLAIN, 9));
+            commandButton[i].setVerticalTextPosition(JButton.EAST);
+            commandButton[i].setHorizontalTextPosition(JButton.CENTER);
+			 Border broder=new EtchedBorder();
+		    commandButton[i].setBorder(broder);
+            commandButton[i].setBackground(BG_BUTTON);
+            commandButton[i].setFocusPainted(false);
+			commandButton[i].setPreferredSize(new Dimension(80, 40));
+			commandPanel.add(commandButton[i]);
+			commandButton[i].addActionListener(this);
+
+		}
+		JPanel  topPanel= new JPanel();
+        topPanel.setPreferredSize(new Dimension(800,50));
+		topPanel.add(commandPanel,BorderLayout.EAST);
+		topPanel.add(drawPanel,BorderLayout.WEST);
+		getContentPane().add(board, BorderLayout.CENTER);
+		getContentPane().add(topPanel, BorderLayout.NORTH);
+		this.setBackground(Color.WHITE);
+ }
+	
+	private void drawHandler(int type) {
+		DrawingBoard.cursor = CROSSHAIR_CURSOR;
+		board.setTool(type);
+		board.setCursor(new Cursor(CROSSHAIR_CURSOR));
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+        String curButton=e.getActionCommand();
+        if (curButton.equals("triangle")) {
+			drawHandler(TRIANGLE);
+		} else if (curButton.equals("line")) {
+			drawHandler(LINE);
+		} else if (curButton.equals("oval")) {
+			drawHandler(OVAL);
+		}
+		else if (curButton.equals("square")) {
+			drawHandler(SQUARE);
+		}
+		else if (curButton.equals("text")) {
+			String textName = JOptionPane.showInputDialog("Please enter text");
+			board.setTextName(textName);
+			drawHandler(TEXT);
+		}
+		else if (curButton.equals("setting")) {
+			Setting setting = new Setting(board);
+			setting.setLocationRelativeTo(null);
+			setting.setVisible(true);
+		}
+		else if (curButton.equals("regret")) {
+			if (board.shapes.size() < 1) {
+				JOptionPane.showMessageDialog(null, "No element on the board!");
+				return;
+			}
+			int index = board.shapes.indexOf(board.currentShape);
+			Shape before = index > 0 ? board.shapes.get(index - 1) : null;
+			if (!board.cancelShapes.contains(board.currentShape)) {
+				board.shapes.remove(board.currentShape);
+				board.cancelShapes.add(board.currentShape);
+				board.currentShape = before;
+			}
+			board.repaint();
+		}
+		else if (curButton.equals("undo")) {
+			if (board.cancelShapes.size() < 1) {
+				JOptionPane.showMessageDialog(null, "No element to undo!");
+				return;
+			}
+			Shape shape = board.cancelShapes.get(board.cancelShapes.size()-1);
+			if (!board.shapes.contains(shape)) {
+				board.cancelShapes.remove(shape);
+				board.shapes.add(shape);
+				board.currentShape = shape;
+			}
+			board.repaint();
+		}
+		else if (curButton.equals("clear")) {
+			board.clearBoard();
+			board.shapes.clear();
+			board.cancelShapes.clear();
+		}
+		else if (curButton.equals("save")) {
+			board.saveImage();
+		}
+        
+	}
+}

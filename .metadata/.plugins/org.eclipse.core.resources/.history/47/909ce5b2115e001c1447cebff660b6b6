@@ -1,0 +1,71 @@
+package chess;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class UIFrame extends JFrame implements ActionListener{
+
+	 public static final Font FONT_BUTTON=new Font("Arial",Font.BOLD,15);
+	private static final long serialVersionUID = 1L;
+	
+	public UIFrame(WelcomePanel welcomePanel)
+	{
+	
+		initUIFrame();
+	}
+
+	private void initUIFrame() {
+		System.out.println(Vars.c.getMode());
+		 this.setTitle("Gobang");
+	        this.setResizable(false);
+	        this.setLayout(null);
+	        if(Vars.c.getMode()==Controller.AI_PLAY)
+	        {
+	        	
+	        	 this.setSize(450, 720);
+	        	 Vars.v.setBounds(25, 0, 400, 600);
+	        	 getContentPane().add(Vars.v);
+	        	 JPanel AICommandPanel=getAICommandPanel();
+	        	 AICommandPanel.setBounds(0, 600, 450, 100);
+	        	 getContentPane().add(AICommandPanel);
+	        }
+	        if(Vars.c.getMode()==Controller.ONLINE_PLAY)
+	        {
+	        	// getContentPane().add(Vars.np,BorderLayout.NORTH);
+	        	 //getContentPane().add(Vars.cp,BorderLayout.EAST);
+	        }
+	}
+	private JPanel getAICommandPanel() {
+		JPanel AIcommandPanel=new JPanel();
+		AIcommandPanel.setLayout(null);
+		JButton goBack=getButton();
+		goBack.setBounds(15,15,25,40);
+		goBack.setText("Go back");
+		AIcommandPanel.add(goBack);
+		return AIcommandPanel;
+	}
+
+	private JButton getButton() {
+		JButton button=new JButton();
+		  button.setForeground(Color.BLACK);
+        button.setBackground(WelcomePanel.BG_BUTTON_COLOR);
+        button.setFont(WelcomePanel.FONT_BUTTON);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.addActionListener(this);
+		return button;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+}

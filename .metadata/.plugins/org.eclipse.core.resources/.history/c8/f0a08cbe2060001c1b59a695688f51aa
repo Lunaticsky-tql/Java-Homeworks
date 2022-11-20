@@ -1,0 +1,293 @@
+package chess;
+
+import java.util.Iterator;
+import java.util.Random;
+
+public class AIHelper {
+	public static final int BLACK=1;
+	public static final int WHITE=-1;
+	public static final int WIDTH=16;
+	public static final int SPACE=0;
+	public static final int INVALIDSPACE = 2;
+	public static final int CP =4;//current position
+	public static final int LB =9;//left boundary
+	public static final int RB =10;//right boundary
+	public static final int ROW=100;
+	public static final int COL=200;
+	public static final int R_DIA =300;
+	public static final int L_DIA =400;
+	public static final int WIN5 = 5000;
+	public static final int ALIVE4 = 1000;
+	public static final int DIE4 = 500;
+	public static final int LOWDIE4 = 480;
+	public static final int ALIVE3 = 500;
+	public static final int TIAO3 = 480;
+	public static final int DIE3 = 150;
+	public static final int ALIVE2 = 200;
+	public static final int LOWALIVE2 = 150;
+	public static final int DIE2 = 20;
+	public static final int NOTHREAT = 1;
+	private int[][] chess=new int[WIDTH+1][WIDTH+1];
+	private int color=SPACE;
+	static int depth=1;
+	public void listen(int[][] data, int otherColor) {
+		for (int i = 0; i <=WIDTH; i++) {
+			for (int j = 0; j <=WIDTH; j++) {
+				chess[i][j]=data[i][j];
+			}
+		}
+		this.color=otherColor;
+		makeDesition();
+	}
+
+	private void makeDesition() {
+		int aix=0;
+		int aiy=0;
+		int ans=-100000000;
+		Random random=new Random();
+		if(Vars.m.getCurrentStepNum()<2)
+		{
+			if(chess[WIDTH/2][WIDTH/2]==SPACE)
+			{
+				aix=WIDTH/2;
+				aiy=WIDTH/2;
+			}
+			else
+			{
+				switch (random.nextInt(5)) {
+				case 0:
+					aix=WIDTH/2+1;
+					aiy=WIDTH/2;
+					break;
+				case 1:
+					aix=WIDTH/2;
+					aiy=WIDTH/2+1;
+					break;
+				case 2:
+					aix=WIDTH/2-1;
+					aiy=WIDTH/2;
+					break;
+				case 3:
+					aix=WIDTH/2;
+					aiy=WIDTH/2-1;
+					break;
+				case 4:
+					aix=WIDTH/2+1;
+					aiy=WIDTH/2-1;
+					break;
+				default:
+					aix=WIDTH/2+1;
+					aiy=WIDTH/2+1;
+					break;
+				}
+			}
+		}
+		else {
+			for (int x = 1; x < WIDTH; x++) {
+				for (int y = 1; y <WIDTH; y++) {
+					if(chess[x][y]!=SPACE)
+						continue;
+					else {
+						putTentatively(x, y, color);
+						int val=alpha_betaFind(0,-100000000,100000000,-color,x,y);
+						System.out.println(val);
+						int ran2=random.nextInt(2);
+						if(val>ans||(val==ans)&&ran2==1)
+						{
+							ans=val;
+							aix=x;
+							aiy=y;
+						}
+						removeTentatively(x,y);
+					}
+				}
+			}
+			
+			
+//			ChessValue p=getMaxEvaluate(3,color,Integer.MAX_VALUE);
+//			System.out.println(222);
+//			aix=p.getRow();
+//			aiy=p.getCol();
+		}
+		Vars.c.AIPutChess(aix, aiy);
+	}
+
+	private ChessValue getMaxEvaluate(int leftStep, int color,int passValue) {
+		System.out.println(leftStep+"  left");
+		int maxPointX=-Integer.MAX_VALUE;
+		int maxPointY=-Integer.MAX_VALUE;
+		int maxVal=-Integer.MAX_VALUE;
+		for (int i = 1; i< WIDTH; i++) {
+			for (int j = 1; j < WIDTH; j++) {
+				if(chess[i][j]!=SPACE)
+					continue;
+				putTentatively(i, j, color);
+				int val=reckonValue(color);
+				if(val>10000)
+				{
+					removeTentatively(i, j);
+					return new ChessValue(i, j, val);
+				}
+				if(leftStep>1)
+				{
+					ChessValue nextStep =getMaxEvaluate(leftStep-1, -color,-maxVal);
+					if (nextStep.getValue()>=passValue) {
+						removeTentatively(i, j);
+						return new ChessValue(i,j,nextStep.getValue());
+					}
+					val=-nextStep.value;
+				}
+				if(val>maxVal)
+				{
+					maxPointX=i;
+					maxPointY=j;
+					maxVal=val;
+				}
+				removeTentatively(i, j);
+			}
+		}
+		return new ChessValue(maxPointX, maxPointY, maxVal);
+	}
+
+	private void removeTentatively(int x, int y) {
+		System.out.println(x+"ff"+y);
+		chess[x][y]=SPACE;
+		
+	}
+
+	private void putTentatively(int x, int y, int color) {
+		System.out.println(x+"gg"+y);
+		chess[x][y]=color;
+	}
+
+	private int alpha_betaFind(int depth, int alpha, int beta, int color, int x, int y) {
+		if(depth>AIHelper.depth||isEnd(x,y,-color)!=SPACE)
+		{
+			int ans=reckonValue(color)-reckonValue(-color);
+			if(depth%2==0)
+			{
+				ans=-ans;
+			}
+			return ans;
+		}
+		for (int i = 1; i <WIDTH; i++) {
+			for (int j = 0; j < WIDTH; j++) {
+				if(chess[i][j]!=SPACE)
+					continue;
+				putTentatively(i, j, color);
+				int val=-alpha_betaFind(depth+1, -beta, alpha, -color, i, j);
+				//in opponent's view
+				removeTentatively(i, j);
+				if(val>=beta)
+					return beta;
+				if(val>alpha)
+					alpha=-val;
+			}
+	
+		}
+		return alpha;
+	}
+
+	private int reckonValue(int color) {
+		int dx[]= {1,0,1,1};
+		int dy[]= {0,1,1,-1};
+		int ans=0;
+		for (int x = 1; x < WIDTH; x++) {
+			for (int y= 1; y < WIDTH; y++) {
+				if(chess[x][y]!=color)
+					continue;
+				int note[][]=new int [2][10];
+				for (int i = 0; i < 4; i++) {
+					int sum=1;
+					int alive1=0,alive2=0;
+					int tx=x+dx[i];
+					int ty=y+dy[i];
+					while (tx>0&&tx<WIDTH&&ty>0&&ty<WIDTH&&chess[tx][ty]==color) {
+						tx+=dx[i];
+						ty+=dy[i];
+						++sum;
+					}
+					if(tx>0&&tx<WIDTH&&ty>0&&ty<WIDTH&&chess[tx][ty]==SPACE)
+					{
+						alive1=1;
+					}
+					tx=x-dx[i];
+					ty=y-dy[i];
+					while (tx>0&&tx<WIDTH&&ty>0&&ty<WIDTH&&chess[tx][ty]==color) {
+						tx-=dx[i];
+						ty-=dy[i];
+						++sum;
+					}
+					if(tx>0&&tx<WIDTH&&ty>0&&ty<WIDTH&&chess[tx][ty]==SPACE)
+					{
+						alive2=1;
+					}
+					if(alive1+alive2>0)
+					{
+						++note[alive1+alive2-1][sum];
+					}
+				}
+				//win5
+				if(note[0][5]>0||note[1][5]>0)
+					ans=Math.max(ans, 100000);
+				//alive4,die4&&alive3
+				if(note[1][4]>0||note[0][4]>1||note[0][4]>0||note[1][3]>0)
+					ans=Math.max(ans, 10000);
+				//double alive3
+				else if(note[1][3]>1)
+					ans=Math.max(ans, 5000);
+				//die4
+				else if(note[0][4]>0)
+					ans=Math.max(ans, 1000);
+				//die3&&alive3
+				else if(note[1][3]>0&&note[0][3]>0)
+					ans=Math.max(ans, 500);
+				//die3
+				else if(note[1][3]>0)
+					ans=Math.max(ans, 200);
+				//double alive 2
+				else if(note[1][2]>1)
+					ans=Math.max(ans, 100);
+				//die3
+				else if(note[0][3]>0)
+					ans=Math.max(ans, 50);
+				//alive2
+				else if(note[1][2]>0)
+					ans=Math.max(ans, 10);
+				//die2
+				else if(note[1][2]>0)
+					ans=Math.max(ans, 5);
+				else if(note[1][1]>0)
+					ans=Math.max(ans, 1);
+			}
+		}
+		return ans;
+	}
+
+	private int isEnd(int x, int y, int color) {
+		int dx[]= {1,0,1,1};
+		int dy[]= {0,1,1,-1};
+		for (int i = 0; i <4; i++) {
+			int sum=1;
+			int tx=x+dx[i];
+			int ty=y+dy[i];
+			while (tx>0&&tx<WIDTH&&ty>0&&ty<WIDTH&&chess[tx][ty]==color) {
+				tx+=dx[i];
+				ty+=dy[i];
+				++sum;
+			}
+			tx=x-dx[i];
+			ty=y-dy[i];
+			while (tx>0&&tx<WIDTH&&ty>0&&ty<WIDTH&&chess[tx][ty]==color) {
+				tx-=dx[i];
+				ty-=dy[i];
+				++sum;
+			}
+			if(sum>=5)
+				return color;
+			
+			}
+		return SPACE;
+	}
+
+}

@@ -1,0 +1,17 @@
+package chess;
+
+import javax.swing.JFrame;
+
+public class UIFrame extends JFrame{
+
+	public UIFrame()
+	{
+		initUIFrame();
+		
+	}
+
+	private void initUIFrame() {
+		
+	}
+	
+}

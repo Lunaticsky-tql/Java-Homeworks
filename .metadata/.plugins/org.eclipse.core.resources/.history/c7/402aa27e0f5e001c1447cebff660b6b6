@@ -1,0 +1,51 @@
+package chess;
+import javax.swing.JFrame;
+
+public class UIFrame extends JFrame{
+
+
+	private static final long serialVersionUID = 1L;
+	public int frameWidth=800;
+	public int frameHeight=600;
+	
+	public UIFrame(WelcomePanel welcomePanel)
+	{
+	
+		initUIFrame();
+	}
+
+	private void initUIFrame() {
+		System.out.println(Vars.c.getMode());
+		 this.setTitle("Gobang");
+	        this.setResizable(false);
+	        this.setLayout(null);
+	        if(Vars.c.getMode()==Controller.AI_PLAY)
+	        {
+	        	
+	        	 this.setSize(450, 720);
+	        	 Vars.v.setBounds(25, 0, 400, 600);
+	        	 getContentPane().add(Vars.v);
+	        }
+	        if(Vars.c.getMode()==Controller.ONLINE_PLAY)
+	        {
+	        	// getContentPane().add(Vars.np,BorderLayout.NORTH);
+	        	 //getContentPane().add(Vars.cp,BorderLayout.EAST);
+	        }
+	}
+	public int getFrameWidth() {
+		return frameWidth;
+	}
+
+	public void setFrameWidth(int frameWidth) {
+		this.frameWidth = frameWidth;
+	}
+
+	public int getFrameHeight() {
+		return frameHeight;
+	}
+
+	public void setFrameHeight(int frameHeight) {
+		this.frameHeight = frameHeight;
+	}
+	
+}

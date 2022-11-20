@@ -1,0 +1,173 @@
+package chess;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JPanel;
+
+
+public class ChessPanel extends JPanel{
+
+	private static final long serialVersionUID = 1L;
+	int width=0,height=0;
+	int sx=0,sy=0,unit=0,gap=0;//start x,position of the 1A point
+	public ChessPanel()
+	{
+		sizeManage();
+		putChess();
+		
+	}
+	private void putChess() {
+		addMouseListener(new MouseAdapter() {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int row=(e.getY()-sy)/unit;
+			int col=(e.getX()-sx)/unit;
+			if((e.getY()-sy)%unit>unit/2)
+			{
+				row++;
+			}
+			if((e.getX()-sx)%unit>unit/2)
+			{
+				col++;
+			}
+			Vars.c.localPutChess(row,col);
+		}});
+	}
+	private void sizeManage() {
+		addComponentListener(new ComponentAdapter() {
+		@Override
+		public void componentResized(ComponentEvent e) {
+			width=getWidth();
+			height=getHeight();
+			int max=width>height?width:height;
+			gap=max/5;
+			unit=(max-gap*2)/(Model.WIDTH-1);
+			sx=(width-unit*(Model.WIDTH-1))/2;
+			sy=(height-unit*(Model.WIDTH-1))/2;
+			repaint();
+		}
+		});
+	}
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		drawChessPanel(g);
+		drawChess(g);
+		drawOppoentPanel(g);
+	}
+private void drawOppoentPanel(Graphics g) {
+	int color =Vars.c.getOtherColor();
+	int opponentWidth=width,opponentHeight=gap/2;
+	String text=" ";
+	String mode=" ";
+	if(color==Model.BLACK)
+	{
+		g.setColor(Color.BLACK);
+		text="Black";
+	}
+	else if(color==Model.WHITE) {
+		g.setColor(Color.WHITE);
+		text="White";
+	}
+	g.fillOval(opponentWidth/3, 3*opponentHeight/2-18, 2*opponentHeight/5, 2*opponentHeight/5);
+	g.setColor(Color.BLACK);
+	g.setFont(new Font("Arial", Font.PLAIN, 15+opponentHeight/10));
+	g.drawString(text, opponentWidth/7, 3*opponentHeight/2);
+	if (Vars.c.getMode()==Controller.SELF_PLAY) {
+		mode="Play yourself";
+	}
+	else if (Vars.c.getMode()==Controller.AI_PLAY) {
+		mode="Play with AI";
+	}
+	else {
+		mode="Play online";
+	}
+	g.setFont(new Font("Arial", Font.BOLD, 16+opponentHeight/9));
+	g.drawString(mode, 5*opponentWidth/8, 3*opponentHeight/2);
+	}
+private void drawChess(Graphics g) {
+
+	for (int row = 0; row < Model.WIDTH; row++) {
+		for (int col = 0; col < Model.WIDTH; col++) {
+			int color=Vars.m.getChess(row, col);
+			if(color==Model.BLACK)
+			{
+				g.setColor(Color.BLACK);
+				g.fillOval(sx+unit*col-unit/2, sy+unit*row-unit/2, unit, unit);
+			}
+			else if(color==Model.WHITE)
+			{
+				g.setColor(Color.WHITE);
+				g.fillOval(sx+unit*col-unit/2, sy+unit*row-unit/2, unit, unit);
+			}
+			
+		}
+	}
+
+}
+private void drawSelfPanel(Graphics g) {
+	int color =Vars.c.getLocalColor();
+	int opponentWidth=width,opponentHeight=gap/2;
+	String text=" ";
+	String mode=" ";
+	if(color==Model.BLACK)
+	{
+		g.setColor(Color.BLACK);
+		text="Black";
+	}
+	else if(color==Model.WHITE) {
+		g.setColor(Color.WHITE);
+		text="White";
+	}
+	g.fillOval(opponentWidth/3, 3*opponentHeight/2-18, 2*opponentHeight/5, 2*opponentHeight/5);
+	g.setColor(Color.BLACK);
+	g.setFont(new Font("Arial", Font.PLAIN, 15+opponentHeight/10));
+	g.drawString(text, opponentWidth/7, 3*opponentHeight/2);
+	if (Vars.c.getMode()==Controller.SELF_PLAY) {
+		mode="Play yourself";
+	}
+	else if (Vars.c.getMode()==Controller.AI_PLAY) {
+		mode="Play with AI";
+	}
+	else {
+		mode="Play online";
+	}
+	g.setFont(new Font("Arial", Font.BOLD, 16+opponentHeight/9));
+	g.drawString(mode, 5*opponentWidth/8, 3*opponentHeight/2);
+	}
+private void drawChess(Graphics g) {
+
+	for (int row = 0; row < Model.WIDTH; row++) {
+		for (int col = 0; col < Model.WIDTH; col++) {
+			int color=Vars.m.getChess(row, col);
+			if(color==Model.BLACK)
+			{
+				g.setColor(Color.BLACK);
+				g.fillOval(sx+unit*col-unit/2, sy+unit*row-unit/2, unit, unit);
+			}
+			else if(color==Model.WHITE)
+			{
+				g.setColor(Color.WHITE);
+				g.fillOval(sx+unit*col-unit/2, sy+unit*row-unit/2, unit, unit);
+			}
+			
+		}
+	}
+
+}
+
+private void drawChessPanel(Graphics g) {
+	g.setColor(Color.BLACK);
+	for (int i = 0; i < Model.WIDTH; i++) {
+		g.drawLine(sx, sy+unit*i, sx+unit*(Model.WIDTH-1), sy+unit*i);
+		g.drawLine(sx+unit*i, sy, sx+unit*i, sy+unit*(Model.WIDTH-1));
+	}
+}
+}

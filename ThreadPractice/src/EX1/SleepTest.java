@@ -1,0 +1,29 @@
+package EX1;
+
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class SleepTest implements Runnable {
+	 private static Random r= new Random();
+	 private final int sleep_time=r.nextInt(10)+1;
+public static void main(String[] args) {
+	ExecutorService exe=Executors.newCachedThreadPool();
+	for (int i = 1; i <=5; i++) {
+		exe.execute(new SleepTest());
+	}
+	Thread.yield();
+	exe.shutdown();
+}
+
+@Override
+public void run() {
+	try {
+		TimeUnit.SECONDS.sleep(sleep_time);
+	} catch (InterruptedException e) {
+		System.out.println("interrupted");
+	}
+	System.out.println(sleep_time);
+}
+}

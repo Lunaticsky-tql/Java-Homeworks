@@ -1,0 +1,11 @@
+package EX1;
+
+public class TaskWithResult implements Runnable {
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

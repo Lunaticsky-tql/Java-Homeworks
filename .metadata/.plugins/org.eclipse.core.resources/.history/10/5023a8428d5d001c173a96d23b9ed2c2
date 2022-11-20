@@ -1,0 +1,57 @@
+package chess;
+
+public class Controller {
+	boolean openDoor=false;
+	int localColor=Model.BLACK;
+	int otherColor=Model.WHITE;
+	public void localPutChess(int row,int col) {
+		if(!openDoor)
+		{
+			return;
+		}
+		boolean success=Vars.m.putChess(row,col,localColor);
+		if(success) {
+			Vars.v.repaint();
+			
+		}
+		Vars.n.sendChess(row, col);
+		openDoor=false;
+
+	}
+	public void netPutChess(int row,int col) {
+		boolean success=Vars.m.putChess(row,col,otherColor);
+		if(success) {
+			Vars.v.repaint();
+			int winner=Vars.m.whoWin();
+			if(winner==Model.BLACK)
+			{
+				
+			}
+		}
+		openDoor=true;
+
+	}
+	public void beginListen() {
+		Vars.n.listen();
+		Vars.np.changeListenBtnState(false);
+		Vars.np.changeConnectBtnState(false);
+		openDoor=true;
+		
+
+	}
+	public void sendChatMessage(String text) {
+		Vars.n.sendChatMessage(text);
+		Vars.cp.addChatMessage(text);
+	}
+	public void otherSaySomething(String text) {
+		Vars.cp.addChatMessage(text);
+	}
+	public void beginConnect(String ip) {
+		Vars.n.connect(ip);
+		openDoor=false;
+		localColor=Model.WHITE;
+		otherColor=Model.BLACK;
+		Vars.np.changeListenBtnState(false);
+		Vars.np.changeConnectBtnState(false);
+	}
+}

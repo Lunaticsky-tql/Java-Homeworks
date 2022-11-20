@@ -1,0 +1,267 @@
+package drawing_board;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import parmeters.ColorParam;
+import parmeters.LineParam;
+import parmeters.PointParam;
+import parmeters.ShapeParam;
+import parmeters.TextParam;
+
+
+public class DrawingBoard extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
+	public static final int TRIANGLE=0;
+	public static final int LINE=1;
+	public static final int OVAL=2;
+	public static final int SQUARE=3;
+	public static final int TEXT=4;
+	private static final long serialVersionUID = 1L;
+	private int tool = LINE;
+	public static int cursor = UIFrame.DEFAULT_CURSOR;
+	public Shape currentShape;
+	public ArrayList<Shape> shapes;
+	public ArrayList<Shape> cancelShapes;
+	private ShapeParam shapeParam;
+	
+	// 画笔默认颜色
+	/** 圆形默认画笔颜色 */
+	public Color defaultColor = Color.BLACK;
+	
+	public HashMap<Integer, Color> colorMap = new HashMap<Integer, Color>();
+	public HashMap<Integer, Float> strokeMap = new HashMap<Integer, Float>();
+	public float stroke = 10.0F;
+	private String textName;
+	public String text_face = "微软雅黑";
+	/** 样式 */
+	public int text_style = 0;
+	/** 大小 */
+	public int text_size = 20;
+		
+	public DrawingBoard() {
+		colorMap.put(TRIANGLE,Color.BLACK);
+		colorMap.put(LINE,Color.BLACK);
+		colorMap.put(OVAL,Color.BLACK);
+		colorMap.put(SQUARE,Color.BLACK);
+		colorMap.put(TEXT,Color.BLACK);
+		strokeMap.put(TRIANGLE, 3.0f);
+		strokeMap.put(LINE,3.0f);
+		strokeMap.put(OVAL,3.0f);
+		strokeMap.put(SQUARE,3.0f);
+		setBackground(Color.WHITE);
+		shapes = new ArrayList<Shape>();
+		cancelShapes = new ArrayList<Shape>();
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		shapeParam = new ShapeParam(800, 800, new ColorParam(0, 0, 0));
+		shapeParam.setLines(new ArrayList<LineParam>());
+		shapeParam.setTexts(new ArrayList<TextParam>());
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D graphics2d = (Graphics2D) g;
+		if (shapes!=null  && shapes.size() > 0) {
+			for (int i = 0; i < shapes.size(); i++) {
+				((Shape) shapes.get(i)).draw(graphics2d);
+			}
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (cursor == 1) {
+			if (e.getButton() == 1) {
+				switch (tool) {
+				case OVAL:
+					currentShape = new Oval(colorMap.get(OVAL), strokeMap.get(OVAL), OVAL, e.getX(), e.getY());
+					break;
+				case TRIANGLE:
+					currentShape = new Triangle(colorMap.get(TRIANGLE), strokeMap.get(TRIANGLE), TRIANGLE, e.getX(), e.getY());
+					break;
+				case LINE: 
+					currentShape = new Line(colorMap.get(LINE), strokeMap.get(LINE), LINE,e.getX(), e.getY());
+					break;
+				case SQUARE: 
+					currentShape = new Square(colorMap.get(SQUARE), strokeMap.get(SQUARE), SQUARE,e.getX(), e.getY());
+					break;
+				case TEXT: // 文字
+					currentShape = new Text(colorMap.get(TEXT), TEXT, e.getX(), e.getY(), getTextName(), text_face, text_style, text_size);
+					break;
+				default:
+					break;
+				}
+				shapes.add(currentShape);
+				repaint();
+			}
+		}
+		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		
+			if (currentShape!= null) {
+				currentShape.mouseDragged(e);
+				repaint();
+			}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		cursor=UIFrame.MOVE_CURSOR;
+		setCursor(new Cursor(UIFrame.MOVE_CURSOR));
+		if (currentShape instanceof Line) {
+			Line temp = (Line) currentShape;
+			LineParam lineParam = new LineParam();
+			lineParam.setSize(6);
+			lineParam.setStart(new PointParam(temp.getLineStartX(), temp.getLineStartY()));
+			lineParam.setEnd(new PointParam(temp.getLineEndX(), temp.getLineEndY()));
+			shapeParam.getLines().add(lineParam);
+		}
+		if (currentShape instanceof Text) {
+			PointParam start = new PointParam(((Text) currentShape).getLineStartX(), ((Text) currentShape).getLineStartY());
+			String word = ((Text) currentShape).getTextName();
+			TextParam text = new TextParam(null, word, ((Text) currentShape).getTextSize(), start, null, null);
+			shapeParam.getTexts().add(text);
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+			if (null != currentShape) {
+				currentShape.mouseDragged(e);
+				repaint();
+			}
+		
+	}
+
+	public void saveImage() {
+		try {
+			BufferedImage bimg = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+			Graphics2D graphics2d = bimg.createGraphics();
+			paint(graphics2d);
+			File file = new File("D:/temp.jpg");
+			ImageIO.write(bimg, "jpg", file);
+			JOptionPane.showMessageDialog(this, "已成功保存到D:/temp.jpg");
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "保存出错");
+			e.printStackTrace();
+		}
+	}
+	
+	public void clearBoard() {
+		shapes.clear();
+		shapeParam.getLines().clear();
+		shapeParam.getTexts().clear();
+		repaint();
+	}
+	
+	public void setTool(int i) {
+		System.out.println(i+"fsfwge");
+			tool = i;
+	}
+
+	public void setStrokeSize(float size, int type) {
+		if ( currentShape==null ) {
+			throw new NullPointerException("currentShape is Null!");
+		}
+		if (size < 0 || size > 10) {
+			throw new IllegalArgumentException("Invaild Weight Specified!");
+		}
+		switch (type) {
+		case OVAL:
+			strokeMap.replace(OVAL, size);
+			break;
+		case TRIANGLE:
+			strokeMap.replace(TRIANGLE, size);
+			break;
+		case LINE: 
+			strokeMap.replace(LINE, size);
+			break;
+		case 3: // 文字
+			
+			break;
+		default:
+			break;
+		}
+		currentShape.stroke = size;
+		repaint();
+	}
+	public void setCurrentX(int x) {
+		currentShape.currentX = x;
+		repaint();
+	}
+
+	/**
+	 * 设置当前图形纵坐标
+	 * @param y 纵坐标
+	 */
+	public void setCurrentY(int y) {
+		currentShape.currentY = y;
+		repaint();
+	}
+
+	public void setCurrentD(int d) {
+		currentShape.currentD = d;
+		repaint();
+	}
+
+	public ShapeParam getImage() {
+		return shapeParam;
+	}
+
+	public void setImage(ShapeParam image) {
+		this.shapeParam = image;
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getTextName() {
+		return textName;
+	}
+
+	public void setTextName(String textName) {
+		this.textName = textName;
+	}
+
+}

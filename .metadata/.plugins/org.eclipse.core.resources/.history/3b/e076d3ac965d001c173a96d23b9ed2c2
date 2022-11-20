@@ -1,0 +1,28 @@
+package chess;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+
+public class UIFrame extends JFrame{
+
+	private static final long serialVersionUID = 1L;
+
+	public UIFrame(WelcomePanel welcomePanel)
+	{
+		initUIFrame();
+		
+	}
+
+	private void initUIFrame() {
+		 this.setTitle("Gobang");
+	        this.setSize(800, 600);
+	        getContentPane().add(Vars.v,BorderLayout.CENTER);
+	        if(Vars.c.getMode()==Controller.ONLINE_PLAY)
+	        {
+	        	 getContentPane().add(Vars.np,BorderLayout.NORTH);
+	        	 getContentPane().add(Vars.cp,BorderLayout.EAST);
+	        }
+	}
+	
+}

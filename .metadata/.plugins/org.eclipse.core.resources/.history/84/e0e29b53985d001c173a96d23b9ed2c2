@@ -1,0 +1,62 @@
+package chess;
+
+import java.awt.BorderLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
+import javax.swing.JFrame;
+
+public class UIFrame extends JFrame{
+
+
+	private static final long serialVersionUID = 1L;
+	public static int frameWidth=800;
+	public static int frameHeight=600;
+	
+	public UIFrame(WelcomePanel welcomePanel)
+	{
+		addSizeListener();
+		initUIFrame();
+	}
+
+	private void addSizeListener() {
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				frameWidth=getWidth();
+				frameHeight=getHeight();
+				repaint();
+				
+			}
+			});
+	}
+
+	private void initUIFrame() {
+		 this.setTitle("Gobang");
+	        this.setSize(800, 600);
+	        getContentPane().add(Vars.v,BorderLayout.CENTER);
+	        getContentPane().add(Vars.o,BorderLayout.NORTH);
+	        
+	        if(Vars.c.getMode()==Controller.ONLINE_PLAY)
+	        {
+	        	// getContentPane().add(Vars.np,BorderLayout.NORTH);
+	        	 getContentPane().add(Vars.cp,BorderLayout.EAST);
+	        }
+	}
+	public int getFrameWidth() {
+		return frameWidth;
+	}
+
+	public void setFrameWidth(int frameWidth) {
+		this.frameWidth = frameWidth;
+	}
+
+	public int getFrameHeight() {
+		return frameHeight;
+	}
+
+	public void setFrameHeight(int frameHeight) {
+		this.frameHeight = frameHeight;
+	}
+	
+}

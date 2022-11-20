@@ -1,0 +1,97 @@
+package chess;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.StringTokenizer;
+
+
+
+public class NetHelper {
+public static final int PORT=6666;
+private Socket s=null;
+protected PrintWriter out;
+protected BufferedReader in;
+public void listen()
+{
+	new Thread() {
+		public void run() {
+			try {
+				ServerSocket ss=new ServerSocket(PORT);
+				s=ss.accept();
+				out=new PrintWriter(s.getOutputStream(),true);
+				in =new BufferedReader(new InputStreamReader(s.getInputStream()));
+				startReadThread();
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+		};
+		
+	}.start();
+}
+public void connect(final String ip) {
+	new Thread() {
+		public void run() {
+			try
+			{
+				s = new Socket(ip,PORT);
+				out=new PrintWriter(s.getOutputStream(),true);
+				in =new BufferedReader(new InputStreamReader(s.getInputStream()));
+				startReadThread();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+		};
+	}.start();
+}
+protected void startReadThread() {
+	new Thread()
+	{
+		@Override
+		public void run() {
+			while(true) {
+				try {
+					String line=in.readLine();
+					if(line==null)
+						return;
+					parseMessage(line);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+			}
+		}
+	}.start();
+
+}
+protected void parseMessage(String line) {
+	StringTokenizer stringTokenizer = new StringTokenizer(
+			line, "#");
+	String command = stringTokenizer.nextToken();
+	if(command.equals("PUT"))
+	{
+		int row=Integer.parseInt(stringTokenizer.nextToken());
+		int col=Integer.parseInt(stringTokenizer.nextToken());
+		Vars.c.netPutChess(row,col);
+		
+	}
+	else if(command.equals("CHAT"))
+	{
+		Vars.c.otherSaySomething(stringTokenizer.nextToken());
+	}
+
+}
+public void sendChess(int row, int col) {
+	out.println("PUT#"+row+"#"+col);
+}
+public void sendChatMessage(String text) {
+	out.println("CHAT#"+text);
+	
+}
+
+}

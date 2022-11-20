@@ -1,0 +1,271 @@
+package drawing_board;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
+
+
+public class Setting extends JDialog implements ActionListener{
+	Color[] colors = {Color.white,Color.black,Color.red,Color.green,Color.blue,Color.yellow};
+	private static final long serialVersionUID = 1L;
+	public static final int TRIANGLE=0;
+	public static final int LINE=1;
+	public static final int OVAL=2;
+	public static final int SQUARE=3;
+	public static final int TEXT=4;
+	private JPanel content;
+	private JLabel backLabel;
+	private JLabel ovalLabel;
+	private JLabel triaLabel;
+	private JLabel lineLabel;
+	private JLabel textLabel;
+	private JComboBox<Color> backColor=new JComboBox<Color>(colors);
+	private JComboBox<Color> ovalColor=new JComboBox<Color>(colors);
+	private JComboBox<Color> triaColor=new JComboBox<Color>(colors);
+	private JComboBox<Color> lineColor=new JComboBox<Color>(colors);
+	private JComboBox<Color> textColor=new JComboBox<Color>(colors);
+	private JComboBox<String> ovalSize;
+	private JComboBox<String> triaSize;
+	private JComboBox<String> lineSize;
+	private JComboBox<String> textFace;
+	private JComboBox<String> textStyle;
+	private JComboBox<String> textSize;
+	// button
+	private JButton backColorButton;
+	private JButton okButton;
+	private JButton quitButton;
+	private DrawingBoard board;
+	ComboBoxRenderer backRenderer = new ComboBoxRenderer();
+	ComboBoxRenderer ovalRenderer = new ComboBoxRenderer();
+	ComboBoxRenderer triaRenderer = new ComboBoxRenderer();
+	ComboBoxRenderer lineRenderer = new ComboBoxRenderer();
+	ComboBoxRenderer textRenderer = new ComboBoxRenderer();
+	private static final String STROKES[] = new String[] { "2.0px", "2.5px", "3.0px", "4.0px", "5.0px", "6.0px" };
+	private static final String FACES[] = new String[] { "楷体", "隶书", "宋体", "华文彩云", "华文行楷", "微软雅黑" };
+	private static final String STYLE[] = new String[] { "Plain", "Bold", "Italic" };
+	private static final String SIZES[] = new String[] { "20", "22", "24", "26", "28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50" };
+	private static final Font FONT = new Font("微软雅黑", Font.PLAIN, 12);
+
+	public Setting(DrawingBoard board) {
+		this.board = board;
+		initGUI();
+	}
+
+	private void initGUI() {
+		setModal(true);
+		setSize(600, 400);
+		setTitle("Setting");
+		setResizable(false);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+		content = new JPanel();
+		content.setLayout(null);
+		getContentPane().add(content);
+		
+		backLabel = new JLabel("background:");
+		backLabel.setBounds(20, 20, 80, 25);
+		backLabel.setFont(FONT);
+		content.add(backLabel);
+		
+		backColor.setBounds(120, 20, 80, 25);
+		backColorButton.setBounds(120, 20, 80, 25);
+		backColorButton=new JButton();
+		backColorButton.setBackground(board.getBackground());
+		backColorButton.setFocusPainted(false);
+		backColorButton.setEnabled(false);
+		backRenderer.setPreferredSize(new Dimension(40, 25));
+		backColor.addActionListener(this);
+		backColor.setRenderer(backRenderer);
+		content.add(backColor);
+		
+		ovalLabel = new JLabel("oval:");
+		ovalLabel.setBounds(40, 60, 55, 25);
+		ovalLabel.setFont(FONT);
+		content.add(ovalLabel);
+
+		
+		ovalColor.setBounds(120, 60, 80, 25);
+		ovalRenderer.setPreferredSize(new Dimension(40, 25));
+		ovalColor.setRenderer(ovalRenderer);
+		ovalColor.addActionListener(this);
+		content.add(ovalColor);
+
+
+		ovalSize = new JComboBox<String>(STROKES);
+		ovalSize.setBounds(240, 60, 80, 25);
+		ovalSize.setFont(FONT);
+		ovalSize.setSelectedItem(transToString(board.strokeMap.get(OVAL)));
+		ovalSize.addActionListener(this);
+		content.add(ovalSize);
+
+		triaLabel = new JLabel("triangle:");
+		triaLabel.setBounds(30, 100, 55, 25);
+		triaLabel.setFont(FONT);
+		content.add(triaLabel);
+
+		triaColor.setBounds(120, 100, 80, 25);
+		triaColor.setPreferredSize(new Dimension(50, 25));
+		triaColor.addActionListener(this);
+		content.add(triaColor);
+
+		triaSize = new JComboBox<String>(STROKES);
+		triaSize.setBounds(240, 100, 80, 25);
+		triaSize.setFont(FONT);
+		triaSize.setSelectedItem(transToString(board.strokeMap.get(TRIANGLE)));
+		triaSize.addActionListener(this);
+		content.add(triaSize);
+
+		lineLabel = new JLabel("line:");
+		lineLabel.setBounds(40, 140, 55, 25);
+		lineLabel.setFont(FONT);
+		content.add(lineLabel);
+		
+		lineColor.setBackground(board.colorMap.get(LINE));
+		lineColor.setBounds(120, 140, 80, 25);
+		lineColor.setPreferredSize(new Dimension(50, 25));
+//		backColor.setRenderer(renderer);
+		lineColor.addActionListener(this);
+		content.add(lineColor);
+		
+		
+		lineSize = new JComboBox<String>(STROKES);
+		lineSize.setBounds(240, 140, 80, 25);
+		lineSize.setFont(FONT);
+		lineSize.setSelectedItem(transToString(board.strokeMap.get(LINE)));
+		lineSize.addActionListener(this);
+		content.add(lineSize);
+
+		textLabel = new JLabel("text:");
+		textLabel.setBounds(40, 180, 55, 25);
+		textLabel.setFont(FONT);
+		content.add(textLabel);
+
+		textColor.setBackground(board.colorMap.get(TEXT));
+		textColor.setBounds(120, 180, 80, 25);
+		textColor.setPreferredSize(new Dimension(50, 25));
+//		backColor.setRenderer(renderer);
+		textColor.addActionListener(this);
+		content.add(textColor);
+		
+		textFace = new JComboBox<String>(FACES);
+		textFace.setBounds(240, 180, 80, 25);
+		textFace.setFont(FONT);
+		textFace.setSelectedItem(board.text_face);
+		textFace.addActionListener(this);
+		content.add(textFace);
+
+		textStyle = new JComboBox<String>(STYLE);
+		textStyle.setBounds(360, 180, 80, 25);
+		textStyle.setFont(FONT);
+		textStyle.setSelectedItem(getStyleStr(board.text_style));
+		textStyle.addActionListener(this);
+		content.add(textStyle);
+
+		textSize = new JComboBox<String>(SIZES);
+		textSize.setBounds(480, 180, 80, 25);
+		textSize.setFont(FONT);
+		textSize.setSelectedItem(String.valueOf(board.text_size));
+		textSize.addActionListener(this);
+		content.add(textSize);
+
+		okButton = new JButton("Sure");
+		okButton.setBounds(85, 235, 80, 30);
+		okButton.setFont(FONT);
+		okButton.addActionListener(this);
+		content.add(okButton);
+
+		quitButton = new JButton("Cancel");
+		quitButton.setBounds(290, 235, 80, 30);
+		quitButton.setFont(FONT);
+		quitButton.addActionListener(this);
+		content.add(quitButton);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == backColor) {
+			
+		}
+		if (e.getSource() == ovalColor) {
+			JComboBox<Color> cb = (JComboBox<Color>) e.getSource(); //获得发生事件的组合框对象
+			Color color = (Color)cb.getSelectedItem();
+			cb.getEditor().getEditorComponent().setBackground(color);
+			backColorButton.setBackground(color);
+		}
+		if (e.getSource() == triaColor) {
+			JComboBox<Color> cb = (JComboBox<Color>) e.getSource(); //获得发生事件的组合框对象
+        	Color color = (Color)cb.getSelectedItem();
+		}
+		if (e.getSource() == lineColor) {
+			JComboBox<Color> cb = (JComboBox<Color>) e.getSource(); //获得发生事件的组合框对象
+        	Color color = (Color)cb.getSelectedItem();
+		}
+		if (e.getSource() == textColor) {
+			JComboBox<Color> cb = (JComboBox<Color>) e.getSource(); //获得发生事件的组合框对象
+        	Color color = (Color)cb.getSelectedItem();//获
+		}
+		if (e.getSource() == okButton) {
+			// color
+			board.setBackground((Color) backColor.getSelectedItem());
+			board.colorMap.replace(OVAL, (Color) ovalColor.getSelectedItem());
+			board.colorMap.replace(TRIANGLE, (Color) triaColor.getSelectedItem());
+			board.colorMap.replace(LINE, (Color) lineColor.getSelectedItem());
+			board.colorMap.replace(TEXT, (Color) textColor.getSelectedItem());
+			board.strokeMap.replace(OVAL, transToFloat(ovalSize));
+			board.strokeMap.replace(TRIANGLE, transToFloat(triaSize));
+			board.strokeMap.replace(LINE, transToFloat(lineSize));
+			board.text_face = String.valueOf(textFace.getSelectedItem());
+			if (String.valueOf(textStyle.getSelectedItem()).equals("Plain")) {
+				board.text_style = Font.PLAIN;
+			}
+			if (String.valueOf(textStyle.getSelectedItem()).equals("Bold")) {
+				board.text_style = Font.BOLD;
+			}
+			if (String.valueOf(textStyle.getSelectedItem()).equals("Italic")) {
+				board.text_style = Font.ITALIC;
+			}
+			board.text_size = Integer.valueOf(String.valueOf(textSize.getSelectedItem()));
+			// close
+			dispose();
+		}
+		if (e.getSource() == quitButton) {
+			dispose();
+		}
+	}
+
+	private String transToString(float value) {
+		String temp = String.valueOf(value);
+		return temp + "px";
+	}
+
+	private float transToFloat(Object object) {
+		String temp = ((JComboBox) object).getSelectedItem().toString();
+		return Float.parseFloat(temp.substring(0, temp.length() - 2));
+	}
+
+	private String getStyleStr(int style) {
+		if (style == Font.PLAIN) {
+			return "Plain";
+		}
+		if (style == Font.BOLD) {
+			return "Bold";
+		}
+		if (style == Font.ITALIC) {
+			return "Italic";
+		}
+		return null;
+	}
+
+}

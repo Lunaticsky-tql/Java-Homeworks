@@ -1,0 +1,18 @@
+1635758479241	Delete element
+1635759092976	Delete element
+1635852491150	Rename type 'User'
+1635852714403	Rename type 'Customer'
+1635852729334	Rename type 'Custome'
+1635852752217	Rename type 'UserBook'
+1635853538430	Rename method 'addUser'
+1635853925379	Rename type 'Boss'
+1635920375725	Rename method 'readUserInput'
+1635921704955	Rename method 'getDiskId'
+1635921872282	Rename method 'getCustomerId'
+1635921947658	Rename method 'getCustomerId'
+1635948485587	Rename field 'diskOwn'
+1635948517447	Rename method 'addOwnDisk'
+1636191352328	Rename field 'a'
+1636191383143	Rename field 'b'
+1636193256899	Rename method 'borrowDisk'
+1636193307723	Rename method 'customerBorrowDisk'

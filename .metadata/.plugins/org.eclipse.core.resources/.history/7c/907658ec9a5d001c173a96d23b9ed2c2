@@ -1,0 +1,93 @@
+package chess;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JPanel;
+
+
+public class ChessPanel extends JPanel{
+
+	private static final long serialVersionUID = 1L;
+	int sx=30,sy=30,unit=50,gap=30;//start x,position of the 1A point
+	public ChessPanel()
+	{
+		addSizeListener();
+		addMouseListener(new MouseAdapter() {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			int row=(e.getY()-sy)/unit;
+			int col=(e.getX()-sx)/unit;
+			if((e.getY()-sy)%unit>unit/2)
+			{
+				row++;
+			}
+			if((e.getX()-sx)%unit>unit/2)
+			{
+				col++;
+			}
+			Vars.c.localPutChess(row,col);
+		}});
+		
+	}
+	private void addSizeListener() {
+		// TODO Auto-generated method stub
+		addComponentListener(new ComponentAdapter() {
+		@Override
+		public void componentResized(ComponentEvent e) {
+			int w=getWidth();
+			int h=getHeight();
+			int min=w<h?w:h;
+			gap=min/20;
+			unit=(min-gap*2)/(Model.WIDTH-1);
+			sx=(w-unit*(Model.WIDTH-1))/2;
+			sy=(h-unit*(Model.WIDTH-1))/2;
+			repaint();
+			
+		}
+		});
+	}
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		drawBackgroundImage(g);
+		drawChessPanel(g);
+		drawChess(g);
+	}
+private void drawBackgroundImage(Graphics g) {
+		// TODO Auto-generated method stub
+		
+	}
+private void drawChess(Graphics g) {
+
+	for (int row = 0; row < Model.WIDTH; row++) {
+		for (int col = 0; col < Model.WIDTH; col++) {
+			int color=Vars.m.getChess(row, col);
+			if(color==Model.BLACK)
+			{
+				g.setColor(Color.BLACK);
+				g.fillOval(sx+unit*col-unit/2, sy+unit*row-unit/2, unit, unit);
+			}
+			else if(color==Model.WHITE)
+			{
+				g.setColor(Color.WHITE);
+				g.fillOval(sx+unit*col-unit/2, sy+unit*row-unit/2, unit, unit);
+			}
+			
+		}
+	}
+
+}
+private void drawChessPanel(Graphics g) {
+	g.setColor(Color.BLACK);
+	for (int i = 0; i < Model.WIDTH; i++) {
+		g.drawLine(sx, sy+unit*i, sx+unit*(Model.WIDTH-1), sy+unit*i);
+		g.drawLine(sx+unit*i, sy, sx+unit*i, sy+unit*(Model.WIDTH-1));
+	}
+}
+}

@@ -1,0 +1,11 @@
+package chess;
+
+public class Vars {
+public static Model m=new Model();
+public static OpponentPanel o=new OpponentPanel();
+public static ChessPanel v=new ChessPanel();
+public static Controller c=new Controller();
+public static NetHelper n=new NetHelper();
+public static NorthPanel np=new NorthPanel();
+public static ChatPanel cp=new ChatPanel();
+}

@@ -1,0 +1,75 @@
+package chess;
+
+public class Controller {
+
+	
+	public static final int SELF_PLAY=1;
+	public static final int AI_PLAY=2;
+	public static final int ONLINE_PLAY=3;
+	public int mode=AI_PLAY;
+	boolean openDoor=false;
+	int localColor=Model.BLACK;
+	int otherColor=Model.WHITE;
+	public int getMode() {
+		return mode;
+	}
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+	public int getLocalColor() {
+		return localColor;
+	}
+	public void setLocalColor(int localColor) {
+		this.localColor = localColor;
+	}
+	public void localPutChess(int row,int col) {
+		if(!openDoor)
+		{
+			return;
+		}
+		boolean success=Vars.m.putChess(row,col,localColor);
+		if(success) {
+			Vars.v.repaint();
+			
+		}
+		Vars.n.sendChess(row, col);
+		openDoor=false;
+
+	}
+	public void netPutChess(int row,int col) {
+		boolean success=Vars.m.putChess(row,col,otherColor);
+		if(success) {
+			Vars.v.repaint();
+			int winner=Vars.m.whoWin();
+			if(winner==Model.BLACK)
+			{
+				
+			}
+		}
+		openDoor=true;
+
+	}
+	public void beginListen() {
+		Vars.n.listen();
+		Vars.np.changeListenBtnState(false);
+		Vars.np.changeConnectBtnState(false);
+		openDoor=true;
+		
+
+	}
+	public void sendChatMessage(String text) {
+		Vars.n.sendChatMessage(text);
+		Vars.cp.addChatMessage(text);
+	}
+	public void otherSaySomething(String text) {
+		Vars.cp.addChatMessage(text);
+	}
+	public void beginConnect(String ip) {
+		Vars.n.connect(ip);
+		openDoor=false;
+		localColor=Model.WHITE;
+		otherColor=Model.BLACK;
+		Vars.np.changeListenBtnState(false);
+		Vars.np.changeConnectBtnState(false);
+	}
+}

@@ -1,0 +1,70 @@
+package chess;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+public class ChooseChessPanel extends JDialog implements ActionListener{
+
+	private static final long serialVersionUID = 1L;
+	public static final Color BG_ALL=new Color(196, 113, 20);
+	public static final Color BG_BUTTON_COLOR=new Color(222, 182, 104);
+	public static final Font FONT_TEXT=new Font("Arial",Font.BOLD,20);
+	public static final Font FONT_BUTTON=new Font("Arial",Font.PLAIN,19);
+	ChooseChessPanel(){
+		super();
+        initUI();
+		this.setTitle("Choose your chess color");
+        this.setSize(300, 200);
+        this.setResizable(false);
+        this.setLayout(null);
+		
+	}
+	private void initUI() {
+		getContentPane().setBackground(BG_ALL);
+		JLabel title=getChooseDialogTitle();
+		title.setBounds(50, 30, 200, 50);
+		getContentPane().add(title);
+		JButton blackButton=getButton(Color.BLACK);
+		blackButton.setText("Black");
+		blackButton.setBounds(60, 130, 50, 30);
+		getContentPane().add(blackButton);
+		JButton whiteButton=getButton(Color.WHITE);
+		whiteButton.setText("White");
+		whiteButton.setBounds(130, 130, 50, 30);
+		getContentPane().add(whiteButton);		
+	}
+	private JButton getButton(Color color) {
+		JButton button=new JButton();
+		button.setForeground(color);
+        button.setBackground(BG_BUTTON_COLOR);
+        button.setFont(FONT_BUTTON);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.addActionListener(this);
+		return button;
+	}
+	private JLabel getChooseDialogTitle() {
+		JLabel title=new JLabel();
+		title.setHorizontalAlignment(JTextField.CENTER);
+		title.setBackground(BG_ALL);
+		title.setText("Choose your chess color");
+        title.setFocusable(false);
+        title.setFont(FONT_TEXT);
+        title.setBorder(null);
+		return title;
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+}

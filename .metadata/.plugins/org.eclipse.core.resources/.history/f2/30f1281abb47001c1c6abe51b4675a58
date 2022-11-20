@@ -1,0 +1,327 @@
+package caculator;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+
+
+
+public class Caculator extends JFrame implements ActionListener {
+    private final String[] main_option={"7","8","9","4","5","6",
+            "1","2","3","+/-","0","."};
+    private final String[] memory_option={"MC","MR","M+","M-","MS"};
+    private final String[] command_option={"%","CE","C","1/x","x²","√x"};
+    private final String[] basic_option={"","÷","×","-","+","="};
+    private JButton main_button[]=new JButton[main_option.length];
+    private JButton command_button[]=new JButton[command_option.length];
+    private JButton basic_button[]=new JButton[basic_option.length];
+    private JButton memory_button[]=new JButton[memory_option.length];
+    private JTextField tf=new JTextField("0");
+    private ImageIcon back =new ImageIcon("src/caculator/back.png");
+    public static final Color BG_ALL=new Color(225, 225, 225);
+    public static final Color BG_MAIN=new Color(250, 250, 250);
+    public static final Color BG_COMMAND=new Color(240, 240, 240);
+    public static final Color BG_BASIC=new Color(240, 240, 240);
+    public static final Color BG_EQUAL=new Color(138, 186, 224);
+    public static final Font font_Main=new Font("Arial",Font.BOLD,19);
+    public static final Font font_Text=new Font("Arial",Font.BOLD,45);
+    public static final Font font_Basic=new Font("Arial",Font.PLAIN,30);
+    public static final Font font_Memory=new Font("Arial",Font.PLAIN,16);
+    //calculation part
+    private boolean is_first_num=true;
+    private double ans_number=0.0;
+    private String operator="=";
+    private boolean legal=true;
+    private double store_number=0.0;
+    
+
+    public Caculator() {
+        super();
+        init();
+        this.setTitle("Caculator 2013599 田佳业");
+        this.setLocation(320,100);
+        this.setSize(333, 460);
+        this.setResizable(false);
+    }
+
+    public static void main(String args[]) {
+        Caculator main_cal=new Caculator();
+        main_cal.setVisible(true);
+        main_cal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    private void init() {
+        tf.setHorizontalAlignment(JTextField.RIGHT);
+        tf.setFocusable(false);
+        tf.setEditable(false);
+        tf.setBackground(BG_ALL);
+        tf.setFont(font_Text);
+        tf.setBorder(null);
+        
+        JPanel main_panel=new JPanel();
+        main_panel.setLayout(new GridLayout(4,3,3,3));
+        main_panel.setBackground(BG_ALL);
+        for(int i=0;i<main_option.length;i++) {
+            main_button[i]=new JButton(main_option[i]);
+            main_panel.add(main_button[i]);
+                main_button[i].setForeground(Color.black);
+                main_button[i].setBackground(BG_MAIN);
+                main_button[i].setFont(font_Main);
+                main_button[i].setBorderPainted(false);
+                main_button[i].setFocusPainted(false);
+        }
+        
+        JPanel command_panel=new JPanel();
+        command_panel.setLayout(new GridLayout(2,5,3,3));
+        command_panel.setBackground(BG_ALL);
+        Dimension dimension_command=new Dimension(150, 105);
+        command_panel.setPreferredSize(dimension_command);
+        for(int i=0;i<command_option.length;i++) {
+            command_button[i]=new JButton(command_option[i]);
+            command_panel.add(command_button[i]);
+            command_button[i].setForeground(Color.black);
+            command_button[i].setBorderPainted(false);
+            command_button[i].setBackground(BG_COMMAND);
+            command_button[i].setFocusPainted(false);
+        }
+        
+        JPanel basic_panel=new JPanel();
+        basic_panel.setLayout(new GridLayout(6,1,3,3));
+        basic_panel.setBackground(BG_ALL);
+        Dimension dimension_basic=new Dimension(75,300);
+        basic_panel.setPreferredSize(dimension_basic);
+
+        for(int i=0;i<basic_option.length;i++) {
+            basic_button[i]=new JButton(basic_option[i]);
+            basic_panel.add(basic_button[i]);
+            if(basic_option[i].equals("")) {
+            	back.setImage(back.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+           	 basic_button[i].setIcon(back);
+           }
+            
+            if(basic_option[i].equals("=")) {
+            	 basic_button[i].setBackground(BG_EQUAL);
+            }else {
+            	 basic_button[i].setBackground(BG_BASIC);
+            }
+            basic_button[i].setForeground(Color.black);
+            basic_button[i].setFont(font_Basic);
+            basic_button[i].setBorderPainted(false);
+            basic_button[i].setFocusPainted(false);
+        }
+        
+        JPanel memory_panel=new JPanel();
+        memory_panel.setLayout(new GridLayout(1,5,3,3));
+        memory_panel.setBackground(BG_ALL);
+        Dimension dimension_memory=new Dimension(200,25);
+        memory_panel.setPreferredSize(dimension_memory);
+
+        for(int i=0;i<memory_option.length;i++) {
+            memory_button[i]=new JButton(memory_option[i]);
+            memory_panel.add(memory_button[i]);
+            memory_button[i].setBackground(BG_ALL);
+            memory_button[i].setForeground(Color.black);
+            memory_button[i].setFont(font_Memory);
+            memory_button[i].setBorderPainted(false);
+            memory_button[i].setFocusPainted(false);
+        }
+        
+        JPanel panelLeft=new JPanel();
+        panelLeft.setLayout(new BorderLayout(3,3));
+        panelLeft.setBackground(BG_ALL);
+        panelLeft.add(command_panel,BorderLayout.NORTH);
+        panelLeft.add(main_panel,BorderLayout.CENTER);
+        JPanel text_panel=new JPanel();
+        text_panel.setLayout(new BorderLayout());
+        text_panel.add(tf,BorderLayout.CENTER);
+        text_panel.add(memory_panel,BorderLayout.SOUTH);
+        Dimension dimension_text=new Dimension(333,100);
+        text_panel.setPreferredSize(dimension_text);
+        getContentPane().setBackground(BG_ALL);
+        getContentPane().setLayout(new BorderLayout(3,5));
+        getContentPane().add(text_panel,BorderLayout.NORTH);
+        getContentPane().add(panelLeft,BorderLayout.CENTER);
+        getContentPane().add(basic_panel,BorderLayout.EAST);
+        for(int i=0;i<main_option.length;i++) {
+            main_button[i].addActionListener(this);
+        }
+        for(int i=0;i<command_option.length;i++) {
+            command_button[i].addActionListener(this);
+        }
+        for(int i=0;i<basic_option.length;i++) {
+            basic_button[i].addActionListener(this);
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        String cur_button=e.getActionCommand();
+        if(cur_button.equals(command_option[0])) {
+            set_back();
+        }
+        else if(cur_button.equals(command_option[1])) {
+            tf.setText("0");
+          //clean current text
+        }
+        else if(cur_button.equals(command_option[2])) {
+            set_c();
+          //clean all
+        }
+        
+        else if("0123456789.".indexOf(cur_button)>=0) {
+            set_number(cur_button);
+        }
+        else if(cur_button.indexOf("M")!=-1) {
+            set_m(cur_button);
+        }
+        else {
+            set_cal(cur_button);
+        }
+    }
+
+    private void set_back() {
+        String text=tf.getText();
+        int len=text.length();
+        if(len>0) {
+            text=text.substring(0,len-1);
+            if(text.length()==0) {
+                tf.setText("0");
+                is_first_num=true;
+                operator="=";
+            }
+            else {
+                tf.setText(text);
+            }
+        }
+    }
+
+    private void set_number(String text) {
+        if(is_first_num){
+            tf.setText(text);
+        }
+        else if(text.equals(".")&&tf.getText().indexOf(".")<0) {
+            tf.setText(tf.getText()+".");
+        }
+        else if(!text.equals(".")) {
+            tf.setText(tf.getText()+text);
+        }
+        is_first_num=false;
+    }
+
+    private void set_m(String cur_button) {
+        if(cur_button.equals("MS")) {//存入
+            store_number=get_text_number();
+            basic_button[0].setText("M");
+            is_first_num=true;
+        }
+        else if(cur_button.equals("MC")) {//清楚储存
+            store_number=0.0;
+            basic_button[0].setText("");
+        }
+        else if(cur_button.equals("M+")) {//累加
+            store_number+=get_text_number();
+            basic_button[0].setText("M+");
+        }
+        else if(cur_button.equals("MR")) {//显示存储
+            tf.setText(String.valueOf(store_number));
+        }
+    }
+
+    private void set_c() {
+        tf.setText("0");
+        is_first_num=true;
+        operator="=";
+        store_number=0.0;
+        basic_button[0].setText("");
+    }
+
+    private void set_cal(String cur_button) {
+        if(operator.equals("/")) {
+            if(get_text_number()==0.0) {
+                legal=false;
+                tf.setText("除数不能为零");
+            }
+            else {
+                ans_number/=get_text_number();
+            }
+        }
+        else if(operator.equals("1/x")) {
+            if(ans_number==0.0) {
+                legal=false;
+                tf.setText("不能对0取倒数");
+            }
+            else {
+                ans_number=1/ans_number;
+            }
+        }
+        else if(operator.equals("+")) {
+            ans_number+=get_text_number();
+        }
+        else if(operator.equals("-")) {
+            ans_number-=get_text_number();
+        }
+        else if(operator.equals("*")) {
+            ans_number*=get_text_number();
+        }
+        else if(operator.equals("sqrt")) {
+            ans_number=Math.sqrt(ans_number);
+        }
+        else if(operator.equals("%")) {
+            ans_number/=100;
+        }
+        else if(operator.equals("+/-")) {
+            ans_number*=(-1.0);
+        }
+        else if(operator.equals("=")) {
+            ans_number=get_text_number();
+        }
+        else if(operator.equals("sin")) {
+            ans_number=Math.sin(ans_number);
+        }
+        else if(operator.equals("cos")) {
+            ans_number=Math.cos(ans_number);
+        }
+        else if(operator.equals("tan")) {
+            ans_number=Math.tan(ans_number);
+        }
+        else if(operator.equals("ln")) {
+            ans_number=Math.log(ans_number);
+        }
+        else if(operator.equals("log10")) {
+            ans_number=Math.log10(ans_number);
+        }
+        if(legal){
+            long t1;
+            double t2;
+            t1=(long) ans_number;
+            t2=ans_number-t1;
+            if(t2==0) {
+                tf.setText(String.valueOf(t1));
+            }
+            else {
+                tf.setText(String.valueOf(ans_number));
+            }
+        }
+        operator=cur_button;
+        is_first_num=true;
+        legal=true;
+    }
+
+    private double get_text_number() {
+        double num=0;
+        try {
+            num=Double.valueOf(tf.getText()).doubleValue();
+        }
+        catch (NumberFormatException e) {
+        }
+        return num;
+    }
+}

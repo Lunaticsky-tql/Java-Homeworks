@@ -1,0 +1,13 @@
+1637463881204	Encapsulate field 'textName'
+1637568214274	Rename field 'font'
+1637568219519	Rename field 'FONTR'
+1637924554812	Rename field 'ovalCheckbox'
+1637924562581	Rename field 'triaCheckbox'
+1637924570879	Rename field 'lineCheckbox'
+1637925054644	Rename field 'lineCheckBox'
+1637985601261	Rename local variable 'my_index'
+1637987265667	Delete element
+1637987922901	Rename field 'textSize'
+1637989339281	Rename field 'text_face'
+1637989382536	Rename field 'text_style'
+1637989391806	Rename field 'text_size'

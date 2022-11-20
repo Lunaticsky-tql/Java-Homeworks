@@ -1,0 +1,16 @@
+package chess;
+
+
+public class AIHelper {
+	public static final int BLACK=1;
+	public static final int WHITE=-1;
+	public static final int WIDTH=15;
+	public static final int SPACE=0;
+	private int[][] data =new int [WIDTH][WIDTH];
+
+	public void listen(int[][] data, int otherColor) {
+		this.data=data;
+		
+	}
+
+}

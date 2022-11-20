@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="selection" value="Font"/>
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="false"/>
+		<item key="wholeword" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<list key="findhistory">
+			<item value="font"/>
+			<item value="text"/>
+			<item value="cur"/>
+			<item value="system"/>
+			<item value="drawHandler"/>
+			<item value="paintcomponent"/>
+			<item value="graphic"/>
+			<item value="sendServerMessage"/>
+			<item value="sever"/>
+			<item value="getname"/>
+			<item value="/"/>
+			<item value="getip"/>
+			<item value="linked"/>
+			<item value="failure"/>
+			<item value="faliure"/>
+		</list>
+		<list key="replacehistory">
+			<item value="220"/>
+			<item value="180"/>
+			<item value="140"/>
+			<item value="240"/>
+			<item value="rect"/>
+			<item value="fill"/>
+			<item value="360"/>
+			<item value="line"/>
+			<item value="tria"/>
+			<item value=""/>
+			<item value="Checkbox"/>
+			<item value="triaColor"/>
+			<item value="ovalColor"/>
+			<item value="oralColor"/>
+			<item value="draw"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="1573"/>
+		<item key="DIALOG_Y_ORIGIN" value="555"/>
+		<item key="DIALOG_WIDTH" value="356"/>
+		<item key="DIALOG_HEIGHT" value="432"/>
+		<item key="DIALOG_FONT_NAME" value="1|Microsoft YaHei UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft YaHei UI"/>
+	</section>
+</section>

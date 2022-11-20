@@ -1,0 +1,17 @@
+1637326616014	Rename local variable 'jf'
+1637327894165	Rename local variable 'jbu1'
+1637329270771	Rename local variable 'main_frame'
+1637389478095	Rename local variable 'boardFrame'
+1637390836705	Rename type 'BoardFrame'
+1637390845682	Delete element
+1637391343080	Rename local variable 'command'
+1637391352151	Rename local variable 'commandPan'
+1637394848851	Rename method 'drawAll'
+1637395724205	Rename field 'cancel_shapes'
+1637397188395	Rename field 'image'
+1637399696078	Delete element
+1637411691659	Rename resource 'oral.png'
+1637413949471	Rename method 'setRoadName'
+1637413981278	Rename field 'roadName'
+1637414047649	Rename method 'getRoadName'
+1637420466124	Rename type 'ConfigDialog'
